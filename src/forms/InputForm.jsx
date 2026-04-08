@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const InputForm = () => {
     const [loading, setLoading] = useState(false)
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         setLoading(true)
         e.preventDefault()
         const form = e.target
@@ -10,7 +11,16 @@ const InputForm = () => {
         const email = form.email.value
         const company = form.company.value
         const role = form.role.value
-        console.log(name, email, company, role);
+        const painPoint = form.painPoint.value
+        const outreachGoal = form.outreachGoal.value
+
+        try {
+            // const res = await post
+        } catch (error) {
+            toast.error(error.message)
+        }
+
+        console.log(name, email, company, role, painPoint, outreachGoal);
 
         setLoading(false)
     }
@@ -32,10 +42,22 @@ const InputForm = () => {
                 <input name='role' type="text" className="input" placeholder="Enter Recipient Role" />
 
                 <label className="label">Pain Points</label>
-                <input name='painPoint' type="text" className="input" placeholder="Enter Pain Points" />
+                <textarea
+                    name='painPoint'
+                    className="textarea w-full"
+                    placeholder="e.g. struggling with lead generation, high churn rate"
+                    rows={3}
+                />
 
                 <label className="label">Outreach Goal</label>
-                <input name='outreachGoal' type="text" className="input" placeholder="Enter Outreach Goal" />
+                <select name='outreachGoal' className="select w-full">
+                    <option disabled={true} selected>Select Goal</option>
+                    <option value="Job Opportunity">Job Opportunity</option>
+                    <option value="Partnership">Partnership</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Collaboration">Collaboration</option>
+                    <option value="Networking">Networking</option>
+                </select>
 
                 <button type='submit' className="btn btn-neutral mt-4">{loading ? "loading" : "Start Agent"}</button>
             </form>
