@@ -1,0 +1,57 @@
+require('dotenv').config();
+const express = require('express')
+const app = express()
+const cors = require('cors')
+const port = 3000
+const { MongoClient, ServerApiVersion } = require('mongodb');
+
+const corsOption = {
+    origin: 'http://localhost:5173',
+    optionsSuccessStatus: 200
+}
+app.use(express.json());
+app.use(cors(corsOption));
+// const uri = "mongodb+srv://rupon:134324234123@cluster0.bpe9ida.mongodb.net/?appName=Cluster0"
+const uri = `${process.env.mongodbURI}`
+
+const client = new MongoClient(uri, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
+});
+async function run() {
+    try {
+        await client.connect();
+        const recipientCollection = client.db('outreach').collection('recipients')
+
+        app.post('/store-data', async (req, res) => {
+            const data = req.body
+            console.log(data);
+            try {
+                if (!data || !data.name || !data.email || !data.company || !data.role || !data.painPoint || !data.outreachGoal) return res.status(400).json({ message: "Invalid input data" })
+
+                const result = await recipientCollection.insertOne(data)
+                res.send(result)
+                // return res.status(201).json({ message: "Data stored successfully" })
+            } catch (error) {
+                return res.status(500).json({ message: "server error", error: error.message })
+            }
+
+        })
+
+    } finally {
+        // Ensures that the client will close when you finish/error
+        // await client.close();
+    }
+}
+run().catch(console.dir);
+
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+})
