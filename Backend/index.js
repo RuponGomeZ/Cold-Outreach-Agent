@@ -11,7 +11,6 @@ const corsOption = {
 }
 app.use(express.json());
 app.use(cors(corsOption));
-// const uri = "mongodb+srv://rupon:134324234123@cluster0.bpe9ida.mongodb.net/?appName=Cluster0"
 const uri = `${process.env.mongodbURI}`
 
 const client = new MongoClient(uri, {
