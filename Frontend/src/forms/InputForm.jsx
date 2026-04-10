@@ -19,7 +19,8 @@ const InputForm = () => {
             company: company,
             role: role,
             painPoint: painPoint,
-            outreachGoal: outreachGoal
+            outreachGoal: outreachGoal,
+
         }
         if (!data || !data.name || !data.email || !data.company || !data.role || !data.painPoint || !data.outreachGoal) return toast.error("Input fields can not be empty")
 

@@ -8,8 +8,9 @@ module.exports = (emailCollection) => {
         console.log(email);
         try {
             if (!email) return res.status(400).json({ message: "Invalid email" })
-
-            const result = await emailCollection.insertOne(email)
+            const date = new Date()
+            const updatedEmail = { ...email, date }
+            const result = await emailCollection.insertOne(updatedEmail)
 
             if (result.insertedId) {
                 const subjectMatch = email.output.match(/^Subject:\s*(.+)/);
