@@ -1,4 +1,4 @@
-# 🥶 Cold Outreach Agent with Prompt Optimization
+# Cold Outreach Agent with Prompt Optimization
 
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-brightgreen)](https://nodejs.org)
 [![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org)
@@ -14,7 +14,7 @@
 - ✅ **Memory**: MongoDB (recipients profiles + email history with reply status)
 - ✅ **Workflow**: n8n for sequencing (initial → follow-up → reply handling)
 - ✅ **Email**: Gmail SMTP via Nodemailer
-- 🔄 **Bonus Channels**: LinkedIn/Twitter APIs (future)
+- ✅ **Bonus Channels**: LinkedIn/Twitter APIs (future)
 
 **Success Criteria**:
 
@@ -23,7 +23,7 @@
 - ✅ Cost-aware: Single efficient model (Codestral)
 - ✅ README explains prompt evolution (initial vs follow-up angles)
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 graph TD
@@ -38,7 +38,7 @@ graph TD
     K -->|PATCH /update-reply-status| L[replied=true<br/>No more follow-ups]
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Prerequisites
 
@@ -81,7 +81,7 @@ npm run dev
 - Credentials: Mistral Cloud, Gmail OAuth2
 - Activate flows
 
-## ✨ Features
+## Features
 
 1. **Personalized Initial Email** (<120 words):
    - Profile-driven (pain/goal/role/company)
@@ -96,7 +96,7 @@ npm run dev
    - Gmail triggers on Re: subjects
    - Updates DB → prevents further emails
 
-## 📋 API Endpoints (Backend)
+## API Endpoints (Backend)
 
 | Endpoint                     | Method | Desc                       |
 | ---------------------------- | ------ | -------------------------- |
@@ -106,7 +106,7 @@ npm run dev
 | `/find-three-days-old-mails` | GET    | Unreplied >3 days          |
 | `/update-mail-reply-status`  | PATCH  | Mark replied               |
 
-## 🤖 AI Prompts (Mistral Codestral)
+## AI Prompts (Mistral Codestral)
 
 **Initial**:
 
@@ -122,7 +122,7 @@ New angle. Reference prior lightly. <90 words.
 Gentle bump or soft breakup.
 ```
 
-## 🔮 Future
+## Future
 
 - Multi-channel (LinkedIn)
 - LLM chain for strategy → copy
