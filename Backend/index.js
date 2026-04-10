@@ -10,6 +10,7 @@ const postEmail = require('./postEmail');
 const findThreeDaysOldMails = require('./findThreeDaysOldMails');
 const getAllMails = require('./getAllMails');
 const updateMailReplyStatus = require('./updateMailReplyStatus');
+const getStatus = require('./getStatus');
 const corsOption = {
     origin: 'http://localhost:5173',
     optionsSuccessStatus: 200
@@ -37,6 +38,7 @@ async function run() {
         app.use("/find-three-days-old-mails", findThreeDaysOldMails(emailCollection))
         app.use("/get-all-mails", getAllMails(emailCollection))
         app.use("/update-mail-reply-status", updateMailReplyStatus(emailCollection))
+        app.use("/get-status", getStatus(emailCollection))
 
     } finally {
         // Ensures that the client will close when you finish/error

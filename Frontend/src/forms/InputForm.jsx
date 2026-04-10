@@ -22,10 +22,13 @@ const InputForm = () => {
             outreachGoal: outreachGoal,
 
         }
-        if (!data || !data.name || !data.email || !data.company || !data.role || !data.painPoint || !data.outreachGoal) return toast.error("Input fields can not be empty")
+        if (!data || !data.name || !data.email || !data.company || !data.role || !data.painPoint || !data.outreachGoal) {
+            setLoading(false)
+            toast.error("Input fields can not be empty")
+        }
 
         try {
-            const res = await fetch(`http://localhost:3000/store-data`, {
+            const res = await fetch(`${import.meta.env.VITE_baseURL}/store-data`, {
                 method: "POST",
                 headers: {
                     'content-type': 'application/json'
@@ -33,14 +36,13 @@ const InputForm = () => {
                 body: JSON.stringify(data)
             })
             setLoading(false)
-            if (res.status === 200) toast.success("Data stored successfully")
+            if (res.status === 201) toast.success("Data stored successfully")
             console.log(res);
         } catch (error) {
             toast.error(error.message)
             setLoading(false)
         }
 
-        // console.log(name, email, company, role, painPoint, outreachGoal);
 
         setLoading(false)
     }
@@ -79,7 +81,7 @@ const InputForm = () => {
                     <option value="Networking">Networking</option>
                 </select>
 
-                <button type='submit' className="btn btn-neutral mt-4">{loading ? "loading" : "Start Agent"}</button>
+                <button disabled={loading} type='submit' className="btn btn-neutral mt-4">{loading ? "The agent is working" : "Start Agent"}</button>
             </form>
         </div>
     );

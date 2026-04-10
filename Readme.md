@@ -43,8 +43,8 @@ graph TD
 ### 1. Prerequisites
 
 - Node.js 18+
-- MongoDB Atlas/Compass (free tier)
-- n8n instance (self-hosted/cloud)
+- MongoDB Atlas/Compass
+- n8n instance
 - Gmail app password for SMTP
 - Mistral Cloud API key
 
