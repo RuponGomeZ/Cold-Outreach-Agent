@@ -5,11 +5,10 @@ const router = express.Router()
 module.exports = (emailCollection) => {
     router.post('/', async (req, res) => {
         const email = req.body;
-        console.log(email);
         try {
             if (!email) return res.status(400).json({ message: "Invalid email" })
             const date = new Date()
-            const updatedEmail = { ...email, date }
+            const updatedEmail = { ...email, date, replied: false }
             const result = await emailCollection.insertOne(updatedEmail)
 
             if (result.insertedId) {

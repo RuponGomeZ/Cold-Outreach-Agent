@@ -1,0 +1,488 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "98f9504e-f872-4de9-afd8-cdd7b72b1e7d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -96,
+        -144
+      ],
+      "id": "919776cd-39ff-4628-a477-5929f9d4d52b",
+      "name": "Webhook",
+      "webhookId": "98f9504e-f872-4de9-afd8-cdd7b72b1e7d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a high-performing B2B cold outreach copywriter.\n\nYour task is to write a short, personalized cold outreach email using the recipient's profile and conversation history.\n\n### Recipient Profile:\n- Name: {{ $json.body.name }}\n- Role: {{ $json.body.role }}\n- Company: {{ $json.body.company }}\n- Pain Points: {{ $json.body.painPoint }}\n- Goal: {{ $json.body.goal }}\n\n### Conversation Context:\n{{ $json.history || \"No previous interaction\" }}\n\n### Instructions:\n1. Personalize the message based on role + company + pain points (no generic phrases).\n2. Focus on ONE clear value proposition that directly relates to their pain.\n3. Keep it under 120 words. Do NOT exceed 120 words.\n4. Use a natural, human tone (avoid sounding like AI or salesy).\n5. Include a soft CTA (e.g., quick chat, question, or curiosity hook).\n6. If previous messages exist, avoid repeating the same angle—try a new approach.\n7. End every email with the signature exactly as shown below.\n\n### Strategy Angles (choose ONE):\n- Direct pain-solution\n- Curiosity hook\n- Social proof\n- Contrarian insight\n\n### Output Format (STRICTLY):\nSubject: <short, engaging subject line>\n\nEmail:\n<email body>\n\nBest,\nRupon Gomes\nBinox\nrupongomez@gmail.com\n\n**Important:** Output only the above. Do NOT add notes, explanations, word count, dont mention /n, or anything else. The result should be ready to send.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        128,
+        -144
+      ],
+      "id": "684cefea-9332-4764-9c19-75c5da9b306d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "codestral-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        96,
+        32
+      ],
+      "id": "aaae0876-fdc0-4a07-87e4-bc791e51ba46",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "UeP1rx2juSAAMBEc",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        944
+      ],
+      "id": "f0344fdb-8f7a-440f-beac-7039bece95c2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/post-email",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"output\": {{ JSON.stringify($json.output) }},\n  \"to\": {{ JSON.stringify($('Webhook').item.json.body.email) }},\n  \"name\": {{ JSON.stringify($('Webhook').item.json.body.name) }},\n  \"company\": {{ JSON.stringify($('Webhook').item.json.body.company) }},\n  \"role\": {{ JSON.stringify($('Webhook').item.json.body.role) }},\n  \"painPoint\": {{ JSON.stringify($('Webhook').item.json.body.painPoint) }},\n  \"goal\": {{ JSON.stringify($('Webhook').item.json.body.goal) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        480,
+        -144
+      ],
+      "id": "0c0b8200-f8b7-440e-ace8-500bfbfca651",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a high-performing B2B cold outreach copywriter specializing in follow-up emails.\n\nYour task is to write a short, personalized follow-up email only if no reply has been received after 3 days.\n\nRecipient Details:\nName: {{ $json.name }}\nCompany: {{ $json.company }}\nRole: {{ $json.role }}\nPain Point: {{ $json.painPoint }}\nGoal: {{ $json.goal }}\nEmail: {{ $json.to }}\n\nPrevious Outreach Context:\n{{ $json.output || \"No previous interaction\" }}\n\nReply Status:\nReplied: {{ $json.replied }}\n\nRules:\nONLY proceed if Replied = false. If true, output: NO EMAIL NEEDED.\nThis is a follow-up, NOT a first contact.\nDo NOT repeat the original angle or wording.\nKeep it under 90 words.\nSound polite, human, and low-pressure.\nReference the previous message lightly (no copy-paste).\nTry a different angle than the first email:\nIf first was pain-based → use curiosity or soft social proof\nIf first was curiosity → use direct value or insight\nIf first was social proof → use contrarian insight or question\nInclude a soft \"breakup-aware\" tone (optional: gentle check-in, not pushy).\nEnd every email with the exact signature below.\n\nAllowed Follow-up Angles (choose ONE):\nGentle bump / check-in\nCuriosity revival\nQuick value reminder\nSoft breakup (\"should I close the loop?\" style)\n\nOutput Format (STRICTLY):\n\nSubject: <short, engaging follow-up subject line>\n\nEmail:\n<email body>\n\ndon't add this part (Best,\nRupon Gomes\nBinox\nrupongomez@gmail.com\")",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        384,
+        960
+      ],
+      "id": "c134afb9-7db7-474b-801a-bca0d98779f3",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b0cf7048-cdf5-4e10-bbf3-ea4972d19d63",
+              "leftValue": "={{ $json.date }}",
+              "rightValue": "={{ $now.minus({ days: 3 }).toISO() }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "before"
+              }
+            },
+            {
+              "id": "63cd4255-d8f9-41cd-a711-b54a92f927f5",
+              "leftValue": "={{ $json.replied === false || $json.replied === 'false' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        160,
+        944
+      ],
+      "id": "6da0c135-fc6a-4a08-ab41-07ef6c0fd7b6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/get-all-mails",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -48,
+        944
+      ],
+      "id": "357fae2a-1f1d-42d7-a194-8c2321fb69dc",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "model": "codestral-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        368,
+        1152
+      ],
+      "id": "94f50980-d107-4316-b600-93cf8318aaf7",
+      "name": "Mistral Cloud Chat Model1",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "UeP1rx2juSAAMBEc",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {}
+          ]
+        },
+        "filters": {
+          "q": "in:inbox subject:Re:"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        480
+      ],
+      "id": "0a8e302b-ccea-4ad6-9198-90540c7545d4",
+      "name": "Gmail Trigger1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "qqr6xH5M65lCPyZe",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/get-all-mails",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        480
+      ],
+      "id": "75cff9b0-5289-4f2a-a8e1-2bd282990e24",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "content": "## Flow 1\n**Post details in database** Receives the http post request sent from frontend > generates the message> makes a post request to backend\n",
+        "height": 496,
+        "width": 832
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -320
+      ],
+      "id": "fa9bf190-0799-46e0-8419-5f739bee85fb",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Flow 2\n**Check mails if reply** If reply is received it makes a patch request to backend updates reply status",
+        "height": 352,
+        "width": 976
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        336
+      ],
+      "id": "1f391caa-fded-4497-8173-0355bbc2dc3c",
+      "name": "Sticky Note1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b91e62a7-0373-4228-ad97-6cea8d75582c",
+              "leftValue": "={{ $('HTTP Request2').all().find(item => item.json.to === $('Gmail Trigger1').item.json.From.match(/<(.+)>/)?.[1])?.json.to }}",
+              "rightValue": "={{ $('Gmail Trigger1').item.json.From.match(/<(.+)>/)?.[1] }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        480
+      ],
+      "id": "70792a72-5462-4adb-a6f1-bb7365a3c125",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "http://localhost:3000/update-mail-reply-status",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ $('HTTP Request2').all().find(item => item.json.to === $('Gmail Trigger1').item.json.From.match(/<(.+)>/)?.[1])?.json.to }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        560,
+        464
+      ],
+      "id": "28547e58-6e55-407b-a6ee-47bfdfe7d8f6",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/post-email",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"output\": {{ JSON.stringify($json.output) }},\n  \"to\": {{ JSON.stringify($('If').item.json.to) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        672,
+        960
+      ],
+      "id": "edc932be-acd8-426c-9ec9-ba329e05e863",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "content": "## Flow 3\n**Sends the follow up message** After waiting for three days its makes a follow up mail which is plan B",
+        "height": 448,
+        "width": 1200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        832
+      ],
+      "id": "10f62ca3-091d-4217-835e-c953642bac4b",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ca00e11b-8fb1-41ea-ad89-ab5915fd61c9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2a3b37be0bd4254052829e2b07229e30f7a3c88e854878eaaaa03cd72a277345"
+  },
+  "id": "m0zSkDMVHEHFPyDh",
+  "tags": []
+}
