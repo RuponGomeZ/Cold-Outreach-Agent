@@ -37,7 +37,6 @@ const InputForm = () => {
             })
             setLoading(false)
             if (res.status === 201) toast.success("Data stored successfully")
-            console.log(res);
         } catch (error) {
             toast.error(error.message)
             setLoading(false)

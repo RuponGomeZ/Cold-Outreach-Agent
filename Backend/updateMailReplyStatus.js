@@ -4,7 +4,6 @@ const router = express.Router()
 module.exports = (emailCollection) => {
     router.patch('/', async (req, res) => {
         const emailToUpdate = req.body.to
-        console.log(emailToUpdate);
         try {
             if (!emailToUpdate) {
                 return res.status(400).json({ message: "Invalid data" })

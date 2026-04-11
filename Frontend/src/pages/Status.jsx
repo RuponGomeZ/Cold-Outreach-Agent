@@ -11,9 +11,7 @@ const Status = () => {
             const res = await fetch(`${import.meta.env.VITE_baseURL}/get-status`);
             const data = await res.json();
             setMailData(data)
-            console.log(data);
         };
-
         fetchData();
     }, []);
 

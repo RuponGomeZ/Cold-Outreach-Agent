@@ -3,8 +3,6 @@ const router = express.Router()
 
 module.exports = (emailCollection) => {
     router.get('/', async (req, res) => {
-        console.log(new Date().toISOString());
-
         try {
             const threeDaysAgo = new Date();
             threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);

@@ -5,7 +5,6 @@ const axios = require('axios');
 module.exports = (recipientCollection) => {
     router.post('/', async (req, res) => {
         const data = req.body
-        console.log(data);
         try {
             if (!data || !data.name || !data.email || !data.company || !data.role || !data.painPoint || !data.outreachGoal) return res.status(400).json({ message: "Invalid input data" })
             const updatedData = { ...data, time: new Date() }
@@ -21,8 +20,6 @@ module.exports = (recipientCollection) => {
                 goal: data.outreachGoal,
                 time: new Date()
             })
-
-
             res.status(201).json({ message: "Data stored & webhook triggered" })
         } catch (error) {
             return res.status(500).json({ message: "server error", error: error.message })
