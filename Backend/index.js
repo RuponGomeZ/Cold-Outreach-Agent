@@ -12,7 +12,7 @@ const getAllMails = require('./getAllMails');
 const updateMailReplyStatus = require('./updateMailReplyStatus');
 const getStatus = require('./getStatus');
 const corsOption = {
-    origin: 'http://localhost:5173',
+    origin: 'https://cold-outreac-agent.web.app',
     optionsSuccessStatus: 200
 }
 app.use(express.json());
@@ -28,7 +28,7 @@ const client = new MongoClient(uri, {
 });
 async function run() {
     try {
-        await client.connect();
+        // await client.connect();
         const recipientCollection = client.db('outreach').collection('recipients')
         const emailCollection = client.db('outreach').collection('emails')
 
@@ -51,6 +51,8 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-app.listen(port, () => {
-    console.log(`app listening on port ${port}`)
-})
+// app.listen(port, () => {
+//     console.log(`app listening on port ${port}`)
+// })
+
+module.exports = app

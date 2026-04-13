@@ -10,7 +10,7 @@ module.exports = (recipientCollection) => {
             const updatedData = { ...data, time: new Date() }
             const result = await recipientCollection.insertOne(updatedData)
 
-            await axios.post(`${process.env.n8nBaseURL}/98f9504e-f872-4de9-afd8-cdd7b72b1e7d`, {
+            await axios.post("https://n8n-cha0.onrender.com/webhook/98f9504e-f872-4de9-afd8-cdd7b72b1e7d", {
                 recipientId: result.insertedId.toString(),
                 name: data.name,
                 email: data.email,
