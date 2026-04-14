@@ -36,7 +36,10 @@ const InputForm = () => {
                 body: JSON.stringify(data)
             })
             setLoading(false)
-            if (res.status === 201) toast.success("Data stored successfully")
+          if (res.status === 201) {
+                form.reset()
+                toast.success("Data stored successfully")
+            }
         } catch (error) {
             toast.error(error.message)
             setLoading(false)
